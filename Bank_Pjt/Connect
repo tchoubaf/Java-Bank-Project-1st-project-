@@ -1,0 +1,98 @@
+package Bank_Pjt;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
+import java.util.Properties;
+
+/*
+ * This class provides an easy way to connect to an AWS RDS instance.
+ * It is implemented using the Singleton design pattern.  Any time the connection
+ * instance is needed, call DB.getConnection().  Instantiating the instance is not required.
+ * 
+ * Please note that DB.getConnection will return a connection object sample code in other
+ * classes and methods should look something like the following:
+ * Connection conn = DB.getInstance();
+ * 
+ * READ THE COMMENTS!
+ */
+
+public class DB {
+	
+	/*
+	 * CONFIGURE THESE 4 FIELDS
+	 */
+
+	//Enter the database Endpoint from AWS here
+	
+	//private static final String ENDPOINT = "hbs-db.cyew5qz80jan.us-east-2.rds.amazonaws.com";
+	
+	
+	//Enter the DB name here if you created one.  By default AWS will leave this blank
+	
+	//private static final String DBNAME = "postgres";
+	
+	
+	//Enter the username for the database.  By default, this will be "postgres"
+	
+	//private static final String USER = "hitriton";
+	
+	
+	//Enter the database password here.
+	/*
+	 * IMPORTANT: YOU *MUST* REMEMBER THE DATABASE PASSWORD AND/OR SAVE THE PASSWORD
+	 * THAT AWS AUTO-GENERATES FOR YOU.  PASSWORDS CANNOT BE RECOVERED.
+	 */
+	
+	//private static final String PASSWORD = "CjjSxdy11KUs2ZqYkKjB";
+	
+	
+	/*
+	 * CODE SHOULD NOT BE MODIFIED BELOW THIS POINT
+	 */
+	
+	//Declare connection object
+	private static Connection conn = null;
+
+	//Create constructor that connects to database if called
+	
+	private DB() {
+		Properties properties = new Properties();
+        try {
+			properties.load(new FileReader("application.properties")); // reading from an external specific file properties
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        String url = properties.getProperty("url");
+        String un = properties.getProperty("un");
+        String pwd = properties.getProperty("pwd");
+        
+        try {
+        	
+            conn = DriverManager.getConnection(url, un, pwd); // reading info from file
+
+			
+//			conn = DriverManager.getConnection("jdbc:postgresql://" + ENDPOINT + "/" + DBNAME, USER, PASSWORD); input info in code
+			
+			
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			//System exits after printing stack trace
+			System.exit(0);
+		}
+	}
+
+	public static Connection getConnection(){
+		//Instantiates DB connection if it does not exist, otherwise returns existing connection
+		if (conn == null) {
+			new DB();
+			return conn;
+		}
+		return conn;
+	}
+}
